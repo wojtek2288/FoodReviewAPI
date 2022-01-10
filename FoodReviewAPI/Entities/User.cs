@@ -9,7 +9,7 @@ namespace FoodReviewAPI.Entities
     {
         public int Id { get; set; }
         public string Email { get; set; }
-        public string Nick { get; set; }
+        public string Username { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string PasswordHash { get; set; }
 

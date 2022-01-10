@@ -17,29 +17,40 @@ namespace FoodReviewAPI.Data
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Category> Categories { get; set; } 
         public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Restaurant>()
+                .HasIndex(e => e.Name);
+
+            modelBuilder.Entity<MenuItem>()
+                .HasIndex(e => e.Name);
+
             modelBuilder.Entity<User>()
-                .Property(u => u.Email)
+                .Property(e => e.Email)
+                .IsRequired();
+
+            modelBuilder.Entity<Category>()
+                .Property(e => e.Name)
                 .IsRequired();
 
             modelBuilder.Entity<Role>()
-                .Property(u => u.Name)
+                .Property(e => e.Name)
                 .IsRequired();
 
             modelBuilder.Entity<Restaurant>()
-                .Property(r => r.Name)
+                .Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(25);
 
             modelBuilder.Entity<MenuItem>()
-                .Property(d => d.Name)
+                .Property(e => e.Name)
                 .IsRequired();
 
             modelBuilder.Entity<Review>()
-                .Property(a => a.Rating)
+                .Property(e => e.Rating)
                 .IsRequired();
         }
     }
