@@ -27,7 +27,7 @@ namespace FoodReviewAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create([FromBody]CreateRestaurantDto dto)
+        public ActionResult Create([FromBody]CreateUpdateRestaurantDto dto)
         {
             int id = _restaurantService.Create(dto);
 
@@ -48,6 +48,14 @@ namespace FoodReviewAPI.Controllers
             var restaurant = _restaurantService.GetById(id);    
 
             return Ok(restaurant);  
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateRestaurant([FromRoute] int id, CreateUpdateRestaurantDto dto)
+        {
+            _restaurantService.Update(id, dto);
+
+            return Ok();
         }
     }
 }

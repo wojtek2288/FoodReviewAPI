@@ -30,5 +30,27 @@ namespace FoodReviewAPI.Controllers
 
             return Ok(menuItem);
         }
+
+        [HttpPost]
+        public ActionResult CreateMenuItem([FromRoute]int restaurantId, [FromBody]CreateUpdateMenuItemDto dto)
+        {
+            int id = _menuItemService.Create(restaurantId, dto);
+            return Created($"api/restaurant/{restaurantId}/menuItem/{id}", null);
+        }
+
+        [HttpDelete("{menuItemId}")]
+        public ActionResult DeleteMenuItem([FromRoute]int menuItemId)
+        {
+            _menuItemService.Delete(menuItemId);
+
+            return Ok();
+        }
+
+        [HttpPut("{menuItemId}")]
+        public ActionResult UpdateMenuItem([FromRoute]int menuItemId, [FromBody]CreateUpdateMenuItemDto dto)
+        {
+            _menuItemService.Update(menuItemId, dto);
+            return Ok();
+        }
     }
 }

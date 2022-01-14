@@ -2,7 +2,7 @@
 
 namespace FoodReviewAPI.Models
 {
-    public class CreateRestaurantDto
+    public class CreateUpdateRestaurantDto
     {
         [Required]
         [MaxLength(50)]

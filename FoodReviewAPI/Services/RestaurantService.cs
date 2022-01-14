@@ -13,9 +13,10 @@ namespace FoodReviewAPI.Services
     public interface IRestaurantService
     {
         public IEnumerable<RestaurantDto> GetAll();
-        public int Create(CreateRestaurantDto dto);
+        public int Create(CreateUpdateRestaurantDto dto);
         public void Delete(int restaurantId);
         public RestaurantDto GetById(int id);
+        public void Update(int id, CreateUpdateRestaurantDto dto);
     }
 
     public class RestaurantService : IRestaurantService
@@ -43,7 +44,7 @@ namespace FoodReviewAPI.Services
             return result;
         }
 
-        public int Create(CreateRestaurantDto dto)
+        public int Create(CreateUpdateRestaurantDto dto)
         {
             var restaurant = _mapper.Map<Restaurant>(dto);
             _dbContext.Restaurants.Add(restaurant);
@@ -104,6 +105,30 @@ namespace FoodReviewAPI.Services
             var result = _mapper.Map<RestaurantDto>(restaurant);
 
             return result;
+        }
+
+        public void Update(int id, CreateUpdateRestaurantDto dto)
+        {
+            var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Id == id);
+            var category = _dbContext.Categories.FirstOrDefault(c => c.Name == dto.Category);
+
+            if (restaurant is null)
+                throw new NotFoundException("Restaurant not found");
+
+            if (category is null)
+                _dbContext.Categories.Add(new Category() { Name = dto.Category});
+
+            var foundCategory = _dbContext.Categories.FirstOrDefault(c => c.Name == dto.Category);
+
+            restaurant.Name = dto.Name;
+            restaurant.Description = dto.Description;
+            restaurant.Category = foundCategory;
+            restaurant.CategoryId = foundCategory.Id;
+
+            _dbContext.Restaurants.Update(restaurant);
+            _dbContext.SaveChanges();
+
+            return;
         }
     }
 }

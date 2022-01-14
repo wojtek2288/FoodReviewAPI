@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FoodReviewAPI.Data;
+using FoodReviewAPI.Entities;
 using FoodReviewAPI.Exceptions;
 using FoodReviewAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,9 @@ namespace FoodReviewAPI.Services
     {
         public IEnumerable<MenuItemDto> GetRestaurantMenuItems(int id);
         public MenuItemDto GetRestaurantMenuItemById(int restaurantId, int menuItemId);
+        public int Create(int restaurantId, CreateUpdateMenuItemDto dto);
+        public void Delete(int menuItemId);
+        public void Update(int menuItemId, CreateUpdateMenuItemDto dto);
     }
 
     public class MenuItemService : IMenuItemService
@@ -58,6 +62,70 @@ namespace FoodReviewAPI.Services
             var result = _mapper.Map<MenuItemDto>(menuItem);
 
             return result;
+        }
+
+        public int Create(int restaurantId, CreateUpdateMenuItemDto dto)
+        {
+            var restaurant = _dbContext.Restaurants
+                .Include(r => r.MenuItems)
+                .FirstOrDefault(r => r.Id == restaurantId);
+
+            if (restaurant is null)
+                throw new NotFoundException("Restaurant not found");
+
+            var menuItem = new MenuItem()
+            {
+                Restaurant = restaurant,
+                Name = dto.Name,
+                Description = dto.Description,
+                Price = dto.Price,
+                RestaurantId = restaurantId,
+                Reviews = new List<Review>()
+            };
+
+            restaurant.MenuItems.Add(menuItem);
+            _dbContext.MenuItems.Add(menuItem);
+            _dbContext.Restaurants.Update(restaurant);
+
+            _dbContext.SaveChanges();
+            return menuItem.Id;
+        }
+
+        public void Delete(int menuItemId)
+        {
+            var menuItem = _dbContext.MenuItems
+                .Include(m => m.Reviews)
+                .FirstOrDefault(m => m.Id == menuItemId);
+
+            if (menuItem is null)
+                throw new NotFoundException("Menu item not found");
+
+            foreach(var review in menuItem.Reviews)
+            {
+                _dbContext.Reviews.Remove(review);
+            }
+
+            _dbContext.MenuItems.Remove(menuItem);
+
+            int removed = _dbContext.SaveChanges();
+
+            return;
+        }
+
+        public void Update(int menuItemId, CreateUpdateMenuItemDto dto)
+        {
+            var menuItem = _dbContext.MenuItems.FirstOrDefault(m => m.Id == menuItemId);
+
+            if (menuItem is null)
+                throw new NotFoundException("Menu item not found");
+
+            menuItem.Name = dto.Name;
+            menuItem.Description = dto.Description;
+            menuItem.Price = dto.Price;
+
+            _dbContext.MenuItems.Update(menuItem);
+            _dbContext.SaveChanges();
+            return;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace FoodReviewAPI.MappingProfiles
 
             CreateMap<Review, ReviewDto>();
 
-            CreateMap<CreateRestaurantDto, Restaurant>()
+            CreateMap<CreateUpdateRestaurantDto, Restaurant>()
                 .ForMember(m => m.Category, c => c.MapFrom(c => new Category()
                 {
                     Name = c.Name,
