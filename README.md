@@ -1,6 +1,6 @@
 # FoodReviewAPI
 
-Web API for food review application.
+Web API for food review application (in progress).
 
 ## Tech
 
